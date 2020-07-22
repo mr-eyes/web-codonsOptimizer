@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<script>
+
+
+
+
+
+</script>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Codons Optimization Tools</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="assets/css/bootstrap.min.css" rel="stylesheet">
+    <link href="assets/css/jquery-confirm.min.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <style>
+    body {
+        padding-top: 30px;
+        /* Required padding for .navbar-fixed-top. Remove if using .navbar-static-top. Change if height of navigation changes. */
+    }
+    </style>
+</head>
+
+<body style="background-color: #f9f9f9">
+
+    <!-- Page Content -->
+    <div class="container" >
+
+        <div class="bg-1 text-center" >
+            <img src="assets/imgs/dna_0.png"  alt="cop" width="100px" height="100px">
+            <h1 >Codons Optimizer</h1>
+            <h3></h3>
+        </div>
+        <!-- /.row -->
+
+    </div>
+    <!-- /.container -->
+<hr>
+
+    <div style="padding-right: 150px" class="container">
+
+
+
+        <!--<form action="result.php" target="_blank" method="post" enctype="multipart/form-data">-->
+        <form id="mainForm" action="result.php" target="_blank" method="post" enctype="multipart/form-data" onsubmit="return validate()">
+
+            <div class="bg-2 text-center">
+                <div class="form-horizontal">
+                    <fieldset>
+                        <!-- Text input-->
+                        <div class="form-group">
+                            <div style="padding-left: 200px;" class="container-fluid bg-2 text-center"><h3>Enter <u>FASTA</u> Sequence</h3></div>
+                            <label class="col-md-4 control-label"></label>
+                            <div class="col-md-6">
+                                <textarea id="seq" name="seq"  style="resize: vertical"  placeholder="ACGTGTCATG..."  class="form-control input-md margin" rows="6" cols="10"></textarea>
+                                <br/>
+                                <label class="custom-file">
+                                    <input name="file" type="file" id="file" class="custom-file-input">
+                                    <span class="custom-file-control"></span>
+                                </label>
+                            </div>
+                        </div>
+
+                    </fieldset>
+                </div>
+            </div>
+
+
+            <div class="bg-2 text-center">
+                <div class="form-horizontal">
+                    <fieldset>
+                        <!-- Text input-->
+                        <div class="form-group text-center">
+                            <div style="padding-left: 200px;" class="container-fluid bg-2 text-center"><h3>Paste Codon Usage Bias Table (Standard Format)</h3></div>
+                            <label class="col-md-4 control-label "></label>
+                            <div class="col-md-6 control-label">
+                                <textarea style="font-family: monospace" id="cub" name="cub" style="resize: vertical"  placeholder="fields: [triplet] [frequency: per thousand] ([number])"  class="form-control input-md margin" rows="6" cols="10"></textarea>
+                                <div class="container-fluid bg-2 text-center"><h3> <button type="submit" class="btn btn-primary">Submit</button></h3></div>
+                                
+                                  <div class="container-fluid bg-2 text-center">
+                                    <h3>
+                                        <button onclick="clearAllFields()" type="reset" class="btn btn-danger">
+                                            Clear All Fields
+                                        </button>
+                                    </h3>
+                                </div>
+                                
+
+                            </div>
+                        </div>
+                    </fieldset>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <hr>
+    <div class="container">
+        <h2>Sample Data</h2>
+        <a href="https://www.ncbi.nlm.nih.gov/nuccore/306410542?report=fasta" target="_blank"><button type="button" class="btn btn-primary btn-block">Influenza A virus [FASTA]</button></a>
+        <a href="http://www.kazusa.or.jp/codon/cgi-bin/showcodon.cgi?species=9031&aa=15&style=N" target="_blank"><button type="button" class="btn btn-primary btn-block">Gallus gallus Codon Bias Table</button>
+        </a>
+    </div>
+    <hr>
+
+    <!-- jQuery Version 1.11.1 -->
+    <script src="assets/js/jquery.js"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="assets/js/bootstrap.min.js"></script>
+
+<hr>
+    <footer class="container-fluid bg-3 text-center">
+        <img src="assets/imgs/nu.png"  alt="nu" width="100px" height="100px"><br/>
+        Developed by <a href="https://www.github.com/mr-eyes">Mohamed Abualainin</a>
+    </footer>
+    <br/>
+    <br/>
+</body>
+
+</html>
+<script src="assets/js/jquery-confirm.min.js"></script>
+
+<script>
+    $('#seq').on('blur',function(event) {
+        var sequence=$(this).val();
+        sequence = sequence.substr(sequence.indexOf('\n')+1);
+        sequence = sequence.replace(/\n/g, "");
+        //$('#virus').val(sequence);
+        if(/^[A,C,G,T]*$/.test(sequence) == false) {
+            $.alert({
+                title: 'Alert!',
+                content: 'Strange Characters Detected'
+            });
+        }
+    });
+
+
+
+    function validate() {
+
+        var file = document.forms["mainForm"]["file"].value;
+        var seq = document.forms["mainForm"]["seq"].value;
+        var cub = document.forms["mainForm"]["cub"].value;
+
+        if ((cub == "") && (seq == "" && file == "")) {
+
+            $.alert({title: 'Alert!', content: 'Complete all fields!'});
+            return false;
+
+        }else if(cub == ""){
+            $.alert({title: 'Alert!', content: 'Codon Usage Bias Table is empty'});
+            return false;
+
+        }else if(seq == "" && file == ""){
+            $.alert({title: 'Alert!', content: 'Upload a FASTA file or paste a sequence'});
+            return false;
+
+        }
+        else if (seq == ""){
+            if(file.split('.').pop() != 'fasta'){
+                $.alert({title: 'Alert!', content: 'Attached file is not with FASTA extension'});
+                return false;
+            }
+        }
+    }
+
+
+function clearAllFields(){
+        $('#seq').val('');
+        $('#cub').val('');
+        $('#file').val('');
+        return false
+    }
+
+
+</script>
